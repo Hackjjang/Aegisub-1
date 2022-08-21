@@ -85,6 +85,9 @@ public:
 		if (col == 0)
 			variant = to_wx(combo.Str());
 		else if (col == 1) {
+#if wxCHECK_VERSION(3, 1, 6)
+			variant << wxDataViewIconText(to_wx(combo.CmdName()), cmd::get(combo.CmdName())->Icon());
+#else
 			wxIcon icon;
 			try {
 				auto icon_bmp = cmd::get(combo.CmdName())->Icon(16);
@@ -95,6 +98,7 @@ public:
 				// Just use no icon; error is reported in the description column
 			}
 			variant << wxDataViewIconText(to_wx(combo.CmdName()), icon);
+#endif
 		}
 		else if (col == 2) {
 			try {

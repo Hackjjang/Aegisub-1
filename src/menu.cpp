@@ -202,7 +202,10 @@ public:
 		menu_text += to_wx("\t" + hotkey::get_hotkey_str_first("Default", co->name()));
 
 		wxMenuItem *item = new wxMenuItem(parent, id_base + items.size(), menu_text, co->StrHelp(), kind);
-#if defined(__WXMSW__)
+#if wxCHECK_VERSION(3, 1, 6)
+		if (kind == wxITEM_NORMAL)
+			item->SetBitmap(co->Icon());
+#elif defined(__WXMSW__)
 #if wxCHECK_VERSION(3, 1, 3)
 		if (kind == wxITEM_NORMAL) {
 			int size = wxRendererNative::Get().GetCheckMarkSize(context->parent).GetWidth();

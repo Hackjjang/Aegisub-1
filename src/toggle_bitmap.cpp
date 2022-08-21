@@ -45,10 +45,19 @@ ToggleBitmap::ToggleBitmap(wxWindow *parent, agi::Context *context, const char *
 : wxControl(parent, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER)
 , context(context)
 , command(*cmd::get(cmd_name))
+#if wxCHECK_VERSION(3, 1, 6)
+, img(command.Icon())
+#else
 , img(command.Icon(icon_size))
+#endif
 {
+#if wxCHECK_VERSION(3, 1, 6)
+	int w = size.GetWidth() != -1 ? size.GetWidth() : img.GetPreferredLogicalSizeFor(this).GetWidth();
+	int h = size.GetHeight() != -1 ? size.GetHeight() : img.GetPreferredLogicalSizeFor(this).GetWidth();
+#else
 	int w = size.GetWidth() != -1 ? size.GetWidth() : img.GetWidth();
 	int h = size.GetHeight() != -1 ? size.GetHeight() : img.GetHeight();
+#endif
 	SetClientSize(w, h);
 	GetSize(&w, &h);
 	SetSizeHints(w, h, w, h);
@@ -81,6 +90,12 @@ void ToggleBitmap::OnPaint(wxPaintEvent &) {
 	dc.SetBrush(wxBrush(bgColor));
 	dc.DrawRectangle(wxPoint(0, 0), GetClientSize());
 
+#if wxCHECK_VERSION(3, 1, 6)
+	wxBitmap bitmap = img.GetBitmapFor(this);
+	wxSize excess = (GetClientSize() - FromPhys(bitmap.GetSize())) / 2;
+	dc.DrawBitmap(bitmap, excess.GetX(), excess.GetY(), true);
+#else
 	wxSize excess = (GetClientSize() - img.GetSize()) / 2;
 	dc.DrawBitmap(img, excess.GetX(), excess.GetY(), true);
+#endif
 }

@@ -139,7 +139,11 @@ namespace {
 					flags & cmd::COMMAND_TOGGLE ? wxITEM_CHECK :
 					wxITEM_NORMAL;
 
+#if wxCHECK_VERSION(3, 1, 6)
+				wxBitmapBundle const& bitmap = command->Icon(GetLayoutDirection());
+#else
 				wxBitmap const& bitmap = command->Icon(icon_size, GetLayoutDirection());
+#endif
 				AddTool(TOOL_ID_BASE + commands.size(), command->StrDisplay(context), bitmap, GetTooltip(command), kind);
 
 				commands.push_back(command);
@@ -171,7 +175,9 @@ namespace {
 		, context(c)
 		, ht_context(std::move(ht_context))
 		, retina_helper(parent)
-#ifdef __WXMSW__
+#if wxCHECK_VERSION(3, 1, 6)
+		, icon_size(16)
+#elif defined(__WXMSW__)
 		, icon_size(parent->FromDIP(16))
 #else
 		, icon_size(OPT_GET("App/Toolbar Icon Size")->GetInt())
@@ -190,7 +196,9 @@ namespace {
 		, ht_context(std::move(ht_context))
 		, retina_helper(parent)
 #ifndef __WXMAC__
-#ifdef __WXMSW__
+#if wxCHECK_VERSION(3, 1, 6)
+		, icon_size(16)
+#elif defined(__WXMSW__)
 		, icon_size(parent->FromDIP(16))
 #else
 		, icon_size(OPT_GET("App/Toolbar Icon Size")->GetInt())

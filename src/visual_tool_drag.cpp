@@ -42,7 +42,9 @@ static const DraggableFeatureType DRAG_ORIGIN = DRAG_BIG_TRIANGLE;
 static const DraggableFeatureType DRAG_START = DRAG_BIG_SQUARE;
 static const DraggableFeatureType DRAG_END = DRAG_BIG_CIRCLE;
 
-#ifdef __WXMSW__
+#if wxCHECK_VERSION(3, 1, 6)
+#define ICON(name) CMD_BITMAP_BUNDLE_GET(name, wxLayout_Default, 16)
+#elif defined(__WXMSW__)
 #define ICON(name) CMD_ICON_GET(name, wxLayout_Default, toolbar->FromDIP(16))
 #else
 #define ICON(name) CMD_ICON_GET(name, wxLayout_Default, OPT_GET("App/Toolbar Icon Size")->GetInt())

@@ -175,7 +175,11 @@ public:
 	DialogStyleManager(agi::Context *context);
 };
 
+#if wxCHECK_VERSION(3, 1, 6)
+wxBitmapButton* add_bitmap_button(wxWindow* parent, wxSizer* sizer, wxBitmapBundle const& img, wxString const& tooltip) {
+#else
 wxBitmapButton *add_bitmap_button(wxWindow *parent, wxSizer *sizer, wxBitmap const& img, wxString const& tooltip) {
+#endif
 	wxBitmapButton *btn = new wxBitmapButton(parent, -1, img);
 	btn->SetToolTip(tooltip);
 	sizer->Add(btn, wxSizerFlags().Expand());
@@ -186,7 +190,13 @@ wxSizer *make_move_buttons(wxWindow *parent, wxButton **up, wxButton **down, wxB
 	wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->AddStretchSpacer(1);
 
-#if defined(__WXMSW__)
+#if wxCHECK_VERSION(3, 1, 6)
+	*up = add_bitmap_button(parent, sizer, CMD_BITMAP_BUNDLE_GET(arrow_up, wxLayout_Default, 24), _("Move style up"));
+	*down = add_bitmap_button(parent, sizer, CMD_BITMAP_BUNDLE_GET(arrow_down, wxLayout_Default, 24), _("Move style down"));
+	*top = add_bitmap_button(parent, sizer, CMD_BITMAP_BUNDLE_GET(arrow_up_stop, wxLayout_Default, 24), _("Move style to top"));
+	*bottom = add_bitmap_button(parent, sizer, CMD_BITMAP_BUNDLE_GET(arrow_down_stop, wxLayout_Default, 24), _("Move style to bottom"));
+	*sort = add_bitmap_button(parent, sizer, CMD_BITMAP_BUNDLE_GET(arrow_sort, wxLayout_Default, 24), _("Sort styles alphabetically"));
+#elif defined(__WXMSW__)
 	*up     = add_bitmap_button(parent, sizer, CMD_ICON_GET(arrow_up, wxLayout_Default, parent->FromDIP(24)), _("Move style up"));
 	*down   = add_bitmap_button(parent, sizer, CMD_ICON_GET(arrow_down, wxLayout_Default, parent->FromDIP(24)), _("Move style down"));
 	*top    = add_bitmap_button(parent, sizer, CMD_ICON_GET(arrow_up_stop, wxLayout_Default, parent->FromDIP(24)), _("Move style to top"));

@@ -11,9 +11,12 @@
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#pragma once
 
 #include <cstdlib>
 #include <utility>
+
+#include <wx/version.h>
 
 #include "bitmap.h"
 #include "default_config.h"
@@ -32,5 +35,23 @@ wxIcon libresrc_geticon(const unsigned char *image, size_t size);
     (size) <= 32 ? GETIMAGEDIR(icon##_32, (dir), (size)) : \
     (size) <= 48 ? GETIMAGEDIR(icon##_48, (dir), (size)) : GETIMAGEDIR(icon##_64, (dir), (size)) )
 #define GETICON(a) libresrc_geticon(a, sizeof(a))
+
+#if wxCHECK_VERSION(3, 1, 6)
+#include <wx/bmpbndl.h>
+template<int size>
+wxBitmapBundle libresrc_getbitmapbundle(wxBitmap image16, wxBitmap image24, wxBitmap image32, wxBitmap image48, wxBitmap image64) {
+    wxVector<wxBitmap> bitmaps;
+    if (size <= 16) bitmaps.push_back(image16);
+    if (size <= 24) bitmaps.push_back(image24);
+    if (size <= 32) bitmaps.push_back(image32);
+    if (size <= 48) bitmaps.push_back(image48);
+    bitmaps.push_back(image64);
+    return wxBitmapBundle::FromBitmaps(bitmaps);
+}
+#define CMD_BITMAP_BUNDLE_GET(icon, dir, size) libresrc_getbitmapbundle<size>( \
+    GETIMAGEDIR(icon##_16, (dir), 16) , GETIMAGEDIR(icon##_24, (dir), 24) , \
+    GETIMAGEDIR(icon##_32, (dir), 32) , GETIMAGEDIR(icon##_48, (dir), 48) , \
+    GETIMAGEDIR(icon##_64, (dir), 64) )
+#endif
 
 #define GET_DEFAULT_CONFIG(a) std::make_pair(reinterpret_cast<const char *>(a), sizeof(a))

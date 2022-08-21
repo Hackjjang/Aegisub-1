@@ -34,7 +34,11 @@ namespace agi { struct Context; }
 #define STR_DISP(a) wxString StrDisplay(const agi::Context *) const override { return _(a); }
 #define STR_HELP(a) wxString StrHelp() const override { return _(a); }
 #define CMD_TYPE(a) int Type() const override { using namespace cmd; return a; }
+#if wxCHECK_VERSION(3, 1, 6)
+#define CMD_ICON(icon) wxBitmapBundle Icon(wxLayoutDirection dir = wxLayout_LeftToRight) const override { return CMD_BITMAP_BUNDLE_GET(icon, dir, 16); }
+#else
 #define CMD_ICON(icon) wxBitmap Icon(int size, wxLayoutDirection dir = wxLayout_LeftToRight) const override { return CMD_ICON_GET(icon, dir, size); }
+#endif
 
 #define COMMAND_GROUP(cname, cmdname, menu, disp, help) \
 struct cname final : public Command {                   \
@@ -101,7 +105,11 @@ DEFINE_EXCEPTION(CommandNotFound, CommandError);
 
 		/// Request icon.
 		/// @param size Icon size.
+#if wxCHECK_VERSION(3, 1, 6)
+		virtual wxBitmapBundle Icon(wxLayoutDirection = wxLayout_LeftToRight) const { return wxBitmapBundle{}; }
+#else
 		virtual wxBitmap Icon(int size, wxLayoutDirection = wxLayout_LeftToRight) const { return wxBitmap{}; }
+#endif
 
 		/// Command function
 		virtual void operator()(agi::Context *c)=0;

@@ -41,7 +41,11 @@ namespace cmd { class Command; }
 class ToggleBitmap final : public wxControl {
 	agi::Context *context;
 	cmd::Command &command;
+#if wxCHECK_VERSION(3, 1, 6)
+	wxBitmapBundle img;
+#else
 	wxBitmap img;
+#endif
 
 	void OnMouseEvent(wxMouseEvent &evt);
 	void OnPaint(wxPaintEvent &evt);

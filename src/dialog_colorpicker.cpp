@@ -460,7 +460,11 @@ class DialogColorPicker final : public wxDialog {
 	wxSpinCtrl *alpha_input;
 
 	/// The eyedropper is set to a blank icon when it's clicked, so store its normal bitmap
+#if wxCHECK_VERSION(3, 1, 6)
+	wxBitmapBundle eyedropper_bitmap;
+#else
 	wxBitmap eyedropper_bitmap;
+#endif
 
 	/// The point where the eyedropper was click, used to make it possible to either
 	/// click the eyedropper or drag the eyedropper
@@ -600,12 +604,14 @@ DialogColorPicker::DialogColorPicker(wxWindow *parent, agi::Color initial_color,
 	preview_box = new wxStaticBitmap(this, -1, wxBitmap(40, 40, 24), wxDefaultPosition, wxSize(40, 40), STATIC_BORDER_FLAG);
 	recent_box = new ColorPickerRecent(this, 8, 4, 16);
 
-#if defined(__WXMSW__)
+#if wxCHECK_VERSION(3, 1, 6)
+	eyedropper_bitmap = CMD_BITMAP_BUNDLE_GET(eyedropper_tool, wxLayout_Default, 24);
+#elif defined(__WXMSW__)
 	eyedropper_bitmap = CMD_ICON_GET(eyedropper_tool, wxLayout_Default, FromDIP(24));
 #else
 	eyedropper_bitmap = GETIMAGE(eyedropper_tool_24);
 #endif
-	eyedropper_bitmap.SetMask(new wxMask(eyedropper_bitmap, wxColour(255, 0, 255)));
+	// eyedropper_bitmap.SetMask(new wxMask(eyedropper_bitmap, wxColour(255, 0, 255)));
 #if wxCHECK_VERSION(3, 1, 0) && defined(__WXMAC__)
 	screen_dropper_icon = new wxGenericStaticBitmap(this, -1, eyedropper_bitmap, wxDefaultPosition, wxDefaultSize, wxRAISED_BORDER);
 #else
