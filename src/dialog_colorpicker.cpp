@@ -89,13 +89,19 @@ class ColorPickerSpectrum final : public wxControl {
 	void OnPaint(wxPaintEvent &evt) {
 		if (!background) return;
 
+#if wxCHECK_VERSION(3, 1, 0)
+		int height = FromDIP(background->GetHeight());
+		int width = FromDIP(background->GetWidth());
+#else
 		int height = background->GetHeight();
 		int width = background->GetWidth();
+#endif
 		wxPaintDC dc(this);
 
 		wxMemoryDC memdc;
 		memdc.SelectObject(*background);
-		dc.Blit(1, 1, width, height, &memdc, 0, 0);
+		wxSize size = memdc.GetSize();
+		dc.StretchBlit(1, 1, width, height, &memdc, 0, 0, size.GetWidth(), size.GetHeight());
 
 		wxPoint arrow[3];
 		wxRect arrow_box;
@@ -105,19 +111,27 @@ class ColorPickerSpectrum final : public wxControl {
 		dc.SetLogicalFunction(wxXOR);
 		dc.SetPen(invpen);
 
+#if wxCHECK_VERSION(3, 1, 0)
+		// These are Logical Coordinates of the selected point
+		int xx = FromDIP(x);
+		int yy = FromDIP(y);
+#else
+		int xx = x, yy = y;
+#endif
+
 		switch (direction) {
 			case PickerDirection::HorzVert:
 				// Make a little cross
-				dc.DrawLine(x-4, y+1, x+7, y+1);
-				dc.DrawLine(x+1, y-4, x+1, y+7);
+				dc.DrawLine(xx-4, yy+1, xx+7, yy+1);
+				dc.DrawLine(xx+1, yy-4, xx+1, yy+7);
 				break;
 			case PickerDirection::Horz:
 				// Make a vertical line stretching all the way across
-				dc.DrawLine(x+1, 1, x+1, height+1);
+				dc.DrawLine(xx+1, 1, xx+1, height+1);
 				// Points for arrow
-				arrow[0] = wxPoint(x+1, height+2);
-				arrow[1] = wxPoint(x+1-spectrum_horz_vert_arrow_size, height+2+spectrum_horz_vert_arrow_size);
-				arrow[2] = wxPoint(x+1+spectrum_horz_vert_arrow_size, height+2+spectrum_horz_vert_arrow_size);
+				arrow[0] = wxPoint(xx+1, height+2);
+				arrow[1] = wxPoint(xx+1-spectrum_horz_vert_arrow_size, height+2+spectrum_horz_vert_arrow_size);
+				arrow[2] = wxPoint(xx+1+spectrum_horz_vert_arrow_size, height+2+spectrum_horz_vert_arrow_size);
 
 				arrow_box.SetLeft(0);
 				arrow_box.SetTop(height + 2);
@@ -126,11 +140,11 @@ class ColorPickerSpectrum final : public wxControl {
 				break;
 			case PickerDirection::Vert:
 				// Make a horizontal line stretching all the way across
-				dc.DrawLine(1, y+1, width+1, y+1);
+				dc.DrawLine(1, yy+1, width+1, yy+1);
 				// Points for arrow
-				arrow[0] = wxPoint(width+2, y+1);
-				arrow[1] = wxPoint(width+2+spectrum_horz_vert_arrow_size, y+1-spectrum_horz_vert_arrow_size);
-				arrow[2] = wxPoint(width+2+spectrum_horz_vert_arrow_size, y+1+spectrum_horz_vert_arrow_size);
+				arrow[0] = wxPoint(width+2, yy+1);
+				arrow[1] = wxPoint(width+2+spectrum_horz_vert_arrow_size, yy+1-spectrum_horz_vert_arrow_size);
+				arrow[2] = wxPoint(width+2+spectrum_horz_vert_arrow_size, yy+1+spectrum_horz_vert_arrow_size);
 
 				arrow_box.SetLeft(width + 2);
 				arrow_box.SetTop(0);
@@ -159,7 +173,7 @@ class ColorPickerSpectrum final : public wxControl {
 		dc.SetLogicalFunction(wxCOPY);
 		dc.SetPen(blkpen);
 		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-		dc.DrawRectangle(0, 0, background->GetWidth()+2, background->GetHeight()+2);
+		dc.DrawRectangle(0, 0, width + 2, height + 2);
 	}
 
 	void OnMouse(wxMouseEvent &evt) {
@@ -182,7 +196,11 @@ class ColorPickerSpectrum final : public wxControl {
 			// Adjust for the 1px black border around the control
 			int newx = mid(0, evt.GetX() - 1, GetClientSize().x - 3);
 			int newy = mid(0, evt.GetY() - 1, GetClientSize().y - 3);
+#if wxCHECK_VERSION(3, 1, 0)
+			SetXY(ToDIP(newx), ToDIP(newy));
+#else
 			SetXY(newx, newy);
+#endif
 			wxCommandEvent evt2(EVT_SPECTRUM_CHANGE, GetId());
 			AddPendingEvent(evt2);
 		}
@@ -244,11 +262,7 @@ wxDEFINE_EVENT(EVT_RECENT_SELECT, ValueEvent<agi::Color>);
 
 /// @class ColorPickerRecent
 /// @brief A grid of recently used colors which can be selected by clicking on them
-#if wxCHECK_VERSION(3, 1, 0) && defined(__WXMAC__)
-class ColorPickerRecent final : public wxGenericStaticBitmap {
-#else
-class ColorPickerRecent final : public wxStaticBitmap {
-#endif
+class ColorPickerRecent final : public wxWindow {
 	int rows;     ///< Number of rows of colors
 	int cols;     ///< Number of cols of colors
 	int cellsize; ///< Width/Height of each cell
@@ -267,60 +281,48 @@ class ColorPickerRecent final : public wxStaticBitmap {
 			AddPendingEvent(ValueEvent<agi::Color>(EVT_RECENT_SELECT, GetId(), colors[i]));
 	}
 
-	void UpdateBitmap() {
-		wxSize sz = GetClientSize();
-
-		wxBitmap background(sz.x, sz.y);
-		wxMemoryDC dc(background);
+	void OnPaint(wxPaintEvent& evt) {
+		wxPaintDC dc(this);
+		wxSize size = dc.GetSize();
 
 		dc.SetPen(*wxTRANSPARENT_PEN);
 
 		for (int cy = 0; cy < rows; cy++) {
 			for (int cx = 0; cx < cols; cx++) {
-				int x = cx * cellsize;
-				int y = cy * cellsize;
-
 				dc.SetBrush(wxBrush(to_wx(colors[cy * cols + cx])));
-				dc.DrawRectangle(x, y, x+cellsize, y+cellsize);
+				dc.DrawRectangle(cx * size.GetWidth() / cols, cy * size.GetHeight() / rows, (cx+1) * size.GetWidth() / cols, (cy+1) * size.GetHeight() / rows);
 			}
 		}
-
-		{
-			wxEventBlocker blocker(this);
-			SetBitmap(background);
-		}
-
-		Refresh(false);
 	}
 
 	bool AcceptsFocusFromKeyboard() const override { return false; }
 
 public:
 	ColorPickerRecent(wxWindow *parent, int cols, int rows, int cellsize)
-#if wxCHECK_VERSION(3, 1, 0) && defined(__WXMAC__)
-	: wxGenericStaticBitmap(parent, -1, wxBitmap(), wxDefaultPosition, wxDefaultSize, STATIC_BORDER_FLAG)
-#else
-	: wxStaticBitmap(parent, -1, wxBitmap(), wxDefaultPosition, wxDefaultSize, STATIC_BORDER_FLAG)
-#endif
+	: wxWindow(parent, -1, wxDefaultPosition, wxDefaultSize, STATIC_BORDER_FLAG)
 	, rows(rows)
 	, cols(cols)
 	, cellsize(cellsize)
 	{
 		colors.resize(rows * cols);
-		SetClientSize(cols*cellsize, rows*cellsize);
+#if wxCHECK_VERSION(3, 1, 0)
+		SetClientSize(FromDIP(cols * cellsize), FromDIP(rows * cellsize));
+#else
+		SetClientSize(cols * cellsize, rows * cellsize);
+#endif
 		SetMinSize(GetSize());
 		SetMaxSize(GetSize());
 		SetCursor(*wxCROSS_CURSOR);
 
+		Bind(wxEVT_PAINT, &ColorPickerRecent::OnPaint, this);
 		Bind(wxEVT_LEFT_DOWN, &ColorPickerRecent::OnClick, this);
-		Bind(wxEVT_SIZE, [=](wxSizeEvent&) { UpdateBitmap(); });
 	}
 
 	/// Load the colors to show
 	void Load(std::vector<agi::Color> const& recent_colors) {
 		colors = recent_colors;
 		colors.resize(rows * cols);
-		UpdateBitmap();
+		Refresh(false);
 	}
 
 	/// Get the list of recent colors
@@ -336,7 +338,7 @@ public:
 			colors.pop_back();
 		}
 
-		UpdateBitmap();
+		Refresh(false);
 	}
 };
 
@@ -409,8 +411,8 @@ void ColorPickerScreenDropper::DropFromScreenXY(int x, int y) {
 	CGGetDisplaysWithPoint(CGPointMake(x, y), 1, &display_id, &display_count);
 
 	agi::scoped_holder<CGImageRef> img(CGDisplayCreateImageForRect(display_id, CGRectMake(x - resx / 2, y - resy / 2, resx, resy)), CGImageRelease);
-	NSUInteger width = CGImageGetWidth(img);
-	NSUInteger height = CGImageGetHeight(img);
+	auto width = CGImageGetWidth(img);
+	auto height = CGImageGetHeight(img);
 	std::vector<uint8_t> imgdata(height * width * 4);
 
 	agi::scoped_holder<CGColorSpaceRef> colorspace(CGColorSpaceCreateDeviceRGB(), CGColorSpaceRelease);
@@ -472,7 +474,7 @@ class DialogColorPicker final : public wxDialog {
 
 	bool eyedropper_is_grabbed;
 
-	wxStaticBitmap *preview_box; ///< A box which simply shows the current color
+	wxWindow *preview_box; ///< A box which simply shows the current color
 	ColorPickerRecent *recent_box; ///< A grid of recently used colors
 
 	ColorPickerScreenDropper *screen_dropper;
@@ -570,9 +572,15 @@ DialogColorPicker::DialogColorPicker(wxWindow *parent, agi::Color initial_color,
 
 	// Create the controls for the dialog
 	wxSizer *spectrum_box = new wxStaticBoxSizer(wxVERTICAL, this, _("Color spectrum"));
+#if wxCHECK_VERSION(3, 1, 0)
+	spectrum = new ColorPickerSpectrum(this, PickerDirection::HorzVert, FromDIP(wxSize(256, 256)));
+	slider = new ColorPickerSpectrum(this, PickerDirection::Vert, FromDIP(wxSize(slider_width, 256)));
+	alpha_slider = new ColorPickerSpectrum(this, PickerDirection::Vert, FromDIP(wxSize(slider_width, 256)));
+#else
 	spectrum = new ColorPickerSpectrum(this, PickerDirection::HorzVert, wxSize(256, 256));
 	slider = new ColorPickerSpectrum(this, PickerDirection::Vert, wxSize(slider_width, 256));
 	alpha_slider = new ColorPickerSpectrum(this, PickerDirection::Vert, wxSize(slider_width, 256));
+#endif
 	wxString modes[] = { _("RGB/R"), _("RGB/G"), _("RGB/B"), _("HSL/L"), _("HSV/H") };
 	colorspace_choice = new wxChoice(this, -1, wxDefaultPosition, wxDefaultSize, 5, modes);
 
@@ -601,7 +609,11 @@ DialogColorPicker::DialogColorPicker(wxWindow *parent, agi::Color initial_color,
 	for (auto& elem : hsv_input)
 		elem = new wxSpinCtrl(this, -1, "", wxDefaultPosition, colorinput_size, wxSP_ARROW_KEYS, 0, 255);
 
-	preview_box = new wxStaticBitmap(this, -1, wxBitmap(40, 40, 24), wxDefaultPosition, wxSize(40, 40), STATIC_BORDER_FLAG);
+#if wxCHECK_VERSION(3, 1, 0)
+	preview_box = new wxWindow(this, -1, wxDefaultPosition, FromDIP(wxSize(40, 40)), STATIC_BORDER_FLAG);
+#else
+	preview_box = new wxWindow(this, -1, wxDefaultPosition, wxSize(40, 40), STATIC_BORDER_FLAG);
+#endif
 	recent_box = new ColorPickerRecent(this, 8, 4, 16);
 
 #if wxCHECK_VERSION(3, 1, 6)
@@ -617,7 +629,11 @@ DialogColorPicker::DialogColorPicker(wxWindow *parent, agi::Color initial_color,
 #else
 	screen_dropper_icon = new wxStaticBitmap(this, -1, eyedropper_bitmap, wxDefaultPosition, wxDefaultSize, wxRAISED_BORDER);
 #endif
+#if wxCHECK_VERSION(3, 1, 0)
+	screen_dropper = new ColorPickerScreenDropper(this, 7, 7, FromDIP(8));
+#else
 	screen_dropper = new ColorPickerScreenDropper(this, 7, 7, 8);
+#endif
 
 	// Arrange the controls in a nice way
 	wxSizer *spectop_sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -892,15 +908,8 @@ void DialogColorPicker::UpdateSpectrumDisplay() {
 	}
 	spectrum_dirty = false;
 
-	wxBitmap tempBmp = preview_box->GetBitmap();
-	{
-		wxMemoryDC previewdc;
-		previewdc.SelectObject(tempBmp);
-		previewdc.SetPen(*wxTRANSPARENT_PEN);
-		previewdc.SetBrush(wxBrush(to_wx(cur_color)));
-		previewdc.DrawRectangle(0, 0, 40, 40);
-	}
-	preview_box->SetBitmap(tempBmp);
+	preview_box->SetBackgroundColour(to_wx(cur_color));
+	preview_box->ClearBackground();
 
 	alpha_slider_img = make_slider_img([=](unsigned char *slid) {
 		static_assert(slider_width % alpha_box_size == 0, "Slider width must be a multiple of alpha box width");
