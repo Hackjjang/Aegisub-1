@@ -1698,7 +1698,7 @@ msgstr "키프레임 파일 저장"
 
 #: ../src/command/recent.cpp:44 ../src/command/recent.cpp:54
 msgid "Open recent audio"
-msgstr "최근 열어본 음향 열기"
+msgstr "최근 열어 본 음향 열기"
 
 #: ../src/command/recent.cpp:44 ../src/command/recent.cpp:45
 #: ../src/command/recent.cpp:46 ../src/command/recent.cpp:47
@@ -1709,27 +1709,27 @@ msgstr "최근 열어본 음향 열기"
 #: ../src/command/recent.cpp:91 ../src/command/recent.cpp:101
 #: ../src/command/recent.cpp:102
 msgid "Recent"
-msgstr "최근 열어본"
+msgstr "최근 항목"
 
 #: ../src/command/recent.cpp:45 ../src/command/recent.cpp:65
 msgid "Open recent keyframes"
-msgstr "최근 열어본 키프레임 열기"
+msgstr "최근 열어 본 키프레임 열기"
 
 #: ../src/command/recent.cpp:46 ../src/command/recent.cpp:76
 msgid "Open recent subtitles"
-msgstr "최근 열어본 자막 열기"
+msgstr "최근 열어 본 자막 열기"
 
 #: ../src/command/recent.cpp:47 ../src/command/recent.cpp:92
 msgid "Open recent timecodes"
-msgstr "최근 열어본 타임코드 열기"
+msgstr "최근 열어 본 타임코드 열기"
 
 #: ../src/command/recent.cpp:48
 msgid "Open recent video"
-msgstr "최근 열어본 영상 열기"
+msgstr "최근 열어 본 영상 열기"
 
 #: ../src/command/recent.cpp:103
 msgid "Open recent videos"
-msgstr "최근 열어본 영상 열기"
+msgstr "최근 열어 본 영상 열기"
 
 #: ../src/command/subtitle.cpp:80
 msgid "A&ttachments..."
@@ -5304,7 +5304,7 @@ msgstr "비어 있음"
 
 #: ../src/menu.cpp:233
 msgid "&Recent"
-msgstr "최근 열어본(&R)"
+msgstr "최근 항목(&R)"
 
 #: ../src/menu.cpp:464
 msgid "No Automation macros loaded"
@@ -7691,25 +7691,25 @@ msgstr "업데이트 확인 :"
 #~ msgstr "일치"
 
 #~ msgid "Maximum recent audio files"
-#~ msgstr "가장 최근 열어본 음향 파일"
+#~ msgstr "가장 최근 열어 본 음향 파일"
 
 #~ msgid "Maximum recent find strings"
 #~ msgstr "가장 최근 찾아본 문자열"
 
 #~ msgid "Maximum recent keyframe files"
-#~ msgstr "가장 최근 열어본 키프레임 파일"
+#~ msgstr "가장 최근 열어 본 키프레임 파일"
 
 #~ msgid "Maximum recent replace strings"
 #~ msgstr "가장 최근 바꾸기한 문자열"
 
 #~ msgid "Maximum recent subtitle files"
-#~ msgstr "가장 최근 열어본 자막 파일"
+#~ msgstr "가장 최근 열어 본 자막 파일"
 
 #~ msgid "Maximum recent timecode files"
-#~ msgstr "가장 최근 열어본 타임코드 파일"
+#~ msgstr "가장 최근 열어 본 타임코드 파일"
 
 #~ msgid "Maximum recent video files"
-#~ msgstr "가장 최근 열어본 영상 파일"
+#~ msgstr "가장 최근 열어 본 영상 파일"
 
 #~ msgid "Maximum undo levels"
 #~ msgstr "최대 실행 취소 레벨"
