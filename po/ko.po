@@ -5938,7 +5938,7 @@ msgstr "고급"
 
 #: ../src/preferences.cpp:366
 msgid "Changing these settings might result in bugs and/or crashes.  Do not touch these unless you know what you're doing."
-msgstr "이 설정을 변경하면 버그나 충돌이 발생할 수 있습니다.  사용법을 잘 모르는 경우, 이 설정을 건드리지 마세요."
+msgstr "이 설정을 변경하면 버그나 충돌이 발생할 수 있습니다.  사용법을 잘 모르면 이 설정을 건드리지 마세요."
 
 #: ../src/preferences.cpp:379 ../src/preferences.cpp:455
 msgid "Expert"
@@ -8535,9 +8535,9 @@ msgstr "유니코드 6.3+ 브라켓 매칭"
 #~ "crashes, glitches and/or movax.\n"
 #~ "Don't touch these unless you know what you're doing."
 #~ msgstr ""
-#~ "경고: 이러한 설정을 변경하면 버그,\n"
+#~ "경고 : 이러한 설정을 변경하면 버그,\n"
 #~ "충돌, 결함 및/또는 이동이 발생할 수 있습니다.\n"
-#~ "잘 모른다면 이 설정을 건드리지 마세요."
+#~ "잘 모르면 이 설정을 건드리지 마세요."
 
 #~ msgid "Warning"
 #~ msgstr "경고"
