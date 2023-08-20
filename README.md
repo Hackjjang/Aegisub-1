@@ -54,7 +54,7 @@ make
 
 이 포크는 CMake 빌드도 제공합니다. 현재 CMake를 사용한 LuaJIT 빌드에 대한 지원이 제한되어 있으므로 x86 및 x64만 지원됩니다.
 
-여전히 위의 종속성을 설치해야 합니다. AviSynth+ 지원을 활성화하려면 이 또한 필요합니다. Windows에는 좋은 패키지 관리자가 없기 때문에 Windows에 종속 요소를 설치하는 것은 까다로울 수 있습니다. Windows에서 모든 종속성을 설치하는 방법은 [위키 페이지](https://github.com/wangqr/Aegisub/wiki/Compile-guide-for-Windows-(CMake,-MSVC))를 참조하세요.
+여전히 위의 종속을 설치해야 합니다. AviSynth+ 지원을 활성화하려면 이 또한 필요합니다. Windows에는 좋은 패키지 관리자가 없기 때문에 Windows에 종속 요소를 설치하는 것은 까다로울 수 있습니다. Windows에서 모든 종속성을 설치하는 방법은 [위키 페이지](https://github.com/wangqr/Aegisub/wiki/Compile-guide-for-Windows-(CMake,-MSVC))를 참조하세요.
 
 종속 요소를 설치한 후, Aegisub를 복제하여 빌드 가능 :
 
