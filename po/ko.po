@@ -5251,7 +5251,7 @@ msgstr "CPS"
 
 #: ../src/grid_column.cpp:343
 msgid "Characters Per Second"
-msgstr "문자/초"
+msgstr "초당 문자수"
 
 #: ../src/hotkey.cpp:269
 msgid "Invalid command name for hotkey"
