@@ -78,8 +78,8 @@ Moonscript 저장소 내에서 `bin/moon bin/splat.moon -l moonscript moonscript
 새로 생성된 `bin/moonscript.lua`를 열고 그 안에서 다음과 같이 변경합니다:
 
 1. 파일의 마지막 줄인 `package.preload["moonscript"]()`에 `return`을 추가하여 `return package.preload["moonscript"]()`를 생성합니다.
-2. package.preload['moonscript.base']`의 함수 내에서 `moon_loader`, `insert_loader`, `remove_loader`에 대한 참조를 제거합니다. 즉, 반환된 테이블에서 해당 선언, 정의 및 항목을 제거합니다.
-3. package.preload['moonscript']`의 함수 내에서 `_with_0.insert_loader()` 줄을 제거합니다.
+2. `package.preload['moonscript.base']`의 함수 내에서 `moon_loader`, `insert_loader`, `remove_loader`에 대한 참조를 제거합니다. 즉, 반환된 테이블에서 해당 선언, 정의 및 항목을 제거합니다.
+3. `package.preload['moonscript']`의 함수 내에서 `_with_0.insert_loader()` 줄을 제거합니다.
 
 이제 파일을 사용할 준비가 되었으며, Aegisub 저장소 내 `automation/include`에 배치할 수 있습니다.
 
